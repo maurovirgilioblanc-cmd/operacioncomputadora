@@ -1,7 +1,0 @@
-﻿airflow/logs/
-airflow/
-**/__pycache__/
-*.pyc
-.env
-*.log
-docker-compose.yaml
