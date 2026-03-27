@@ -150,3 +150,5 @@
 {"timestamp":"2026-03-27T21:54:17.558650","level":"info","event":"Filling up the DagBag from /home/airflow/.local/lib/python3.12/site-packages/airflow/example_dags/example_bash_operator.py","logger":"airflow.models.dagbag.DagBag"}
 {"timestamp":"2026-03-27T21:55:18.961418","level":"info","event":"Filling up the DagBag from /home/airflow/.local/lib/python3.12/site-packages/airflow/example_dags/example_bash_operator.py","logger":"airflow.models.dagbag.DagBag"}
 {"timestamp":"2026-03-27T21:56:20.140510","level":"info","event":"Filling up the DagBag from /home/airflow/.local/lib/python3.12/site-packages/airflow/example_dags/example_bash_operator.py","logger":"airflow.models.dagbag.DagBag"}
+{"timestamp":"2026-03-27T22:01:23.815575","level":"info","event":"Filling up the DagBag from /home/airflow/.local/lib/python3.12/site-packages/airflow/example_dags/example_bash_operator.py","logger":"airflow.models.dagbag.DagBag"}
+{"timestamp":"2026-03-27T22:03:57.422218","level":"info","event":"Filling up the DagBag from /home/airflow/.local/lib/python3.12/site-packages/airflow/example_dags/example_bash_operator.py","logger":"airflow.models.dagbag.DagBag"}
