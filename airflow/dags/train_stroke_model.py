@@ -35,25 +35,34 @@ def train_stroke_model():
                 f"El archivo {DATA_KEY} no está en el bucket '{DATA_BUCKET}'."
             )
 
-    @task
+    @task.virtualenv(
+        requirements=["boto3", "pandas==2.2.2"],
+        system_site_packages=False,
+    )
     def load_data():
         import boto3
         import pandas as pd
         from io import StringIO
+        import os
+
         s3 = boto3.client(
             "s3",
-            endpoint_url=MINIO_ENDPOINT,
+            endpoint_url="http://s3:9000",
             aws_access_key_id=os.environ["AWS_ACCESS_KEY_ID"],
             aws_secret_access_key=os.environ["AWS_SECRET_ACCESS_KEY"],
         )
-        obj = s3.get_object(Bucket=DATA_BUCKET, Key=DATA_KEY)
+        obj = s3.get_object(Bucket="data", Key="stroke-data.csv")
         df = pd.read_csv(StringIO(obj["Body"].read().decode("utf-8")))
         return df.to_json()
 
-    @task
+    @task.virtualenv(
+        requirements=["pandas==2.2.2", "numpy==1.26.4"],
+        system_site_packages=False,
+    )
     def feature_engineering(df_json: str):
         import pandas as pd
         import numpy as np
+
         df = pd.read_json(df_json)
         df = df.drop(columns=["id"])
         df["age_group"] = pd.cut(df["age"], bins=[0, 30, 50, 70, 120],
@@ -67,8 +76,19 @@ def train_stroke_model():
         df["work_type"] = df["work_type"].replace({"Never_worked": "children"})
         return df.to_json()
 
-    @task
+    @task.virtualenv(
+        requirements=[
+            "pandas==2.2.2",
+            "numpy==1.26.4",
+            "scikit-learn==1.4.2",
+            "imbalanced-learn==0.12.3",
+            "mlflow==2.19.0",
+            "boto3",
+        ],
+        system_site_packages=False,
+    )
     def train_and_register(df_json: str):
+        import os
         import pandas as pd
         import numpy as np
         import mlflow
@@ -83,6 +103,9 @@ def train_stroke_model():
         )
         from imblearn.pipeline import Pipeline as ImbPipeline
         from imblearn.over_sampling import SMOTE
+
+        MLFLOW_TRACKING_URI = "http://mlflow:5000"
+        RANDOM_STATE = 42
 
         df = pd.read_json(df_json)
         X = df.drop("stroke", axis=1)
@@ -155,6 +178,7 @@ def train_stroke_model():
             )
             print(f"AUC: {auc:.4f} | Recall: {rec:.4f} | Threshold: {best_threshold:.5f}")
 
+    # Encadenados
     df_raw = load_data()
     df_features = feature_engineering(df_raw)
     check_dataset() >> df_raw
